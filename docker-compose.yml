@@ -1,0 +1,21 @@
+services:
+  app:
+    build: .
+    image: clause-review-console:latest
+    container_name: clause-review-console
+    ports:
+      # 宿主机端口:容器端口；可用 HOST_PORT 覆盖宿主机端口
+      - "${HOST_PORT:-3000}:3000"
+    environment:
+      # 服务监听端口（容器内）
+      PORT: 3000
+      # SQLite 数据库文件路径（挂载到卷以持久化）
+      DB_PATH: /app/data/reviews.db
+      # 批注迁移锚点相似度阈值 (0~1)，低于该值的批注标记为“待复核”
+      ANCHOR_SIMILARITY_THRESHOLD: "${ANCHOR_SIMILARITY_THRESHOLD:-0.45}"
+    volumes:
+      - review-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  review-data:
